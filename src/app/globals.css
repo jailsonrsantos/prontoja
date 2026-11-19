@@ -1,26 +1,53 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-marca: #1e3a8a;
+  --color-marca-escura: #172554;
+  --color-marca-clara: #dbeafe;
+  --color-acao: #c2410c;
+  --color-acao-escura: #9a3412;
+  --color-protegido: #15803d;
+  --color-protegido-claro: #dcfce7;
+  --color-fundo: #f8fafc;
+  --color-texto: #0f172a;
+  --color-suave: #475569;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-titulo: var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-fundo);
+  color: var(--color-texto);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-titulo);
+}
+
+/* Botões padrão: no mínimo 44px de altura (toque fácil no celular) */
+@utility btn {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 text-base font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+}
+@utility btn-acao {
+  @apply btn bg-acao text-white hover:bg-acao-escura;
+}
+@utility btn-marca {
+  @apply btn bg-marca text-white hover:bg-marca-escura;
+}
+@utility btn-contorno {
+  @apply btn border border-slate-300 bg-white text-texto hover:bg-slate-50;
+}
+@utility campo {
+  @apply min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-base outline-none focus:border-marca focus:ring-2 focus:ring-marca/20;
+}
+@utility rotulo {
+  @apply mb-1 block text-sm font-medium text-texto;
+}
+@utility cartao {
+  @apply rounded-2xl border border-slate-200 bg-white p-4 shadow-sm;
 }

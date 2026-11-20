@@ -13,5 +13,8 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(`${origin}${voltar}`);
   }
-  return NextResponse.redirect(`${origin}/entrar?erro=login`);
+  // Quando o link de confirmação é aberto em outro navegador, o e-mail JÁ foi
+  // confirmado pelo Supabase, mas a sessão não pode ser criada aqui.
+  const tipoErro = searchParams.get("error_description") ? "link" : code ? "outro-navegador" : "login";
+  return NextResponse.redirect(`${origin}/entrar?erro=${tipoErro}`);
 }

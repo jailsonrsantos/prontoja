@@ -22,7 +22,7 @@ export function traduzirErro(mensagem?: string | null): string {
   if (m.includes("row-level security")) return "Você não tem permissão para esta ação.";
   if (m.includes("payload too large") || m.includes("exceeded the maximum")) return "A foto é grande demais. Tente outra.";
   if (m.includes("failed to fetch")) return "Sem conexão com o servidor. Verifique sua internet.";
-  return "Algo deu errado. Tente de novo.";
+  return `Algo deu errado. Tente de novo. (Detalhe técnico: ${mensagem.slice(0, 160)})`;
 }
 
 /** Só aceita endereços internos do app (evita redirecionar para sites externos) */

@@ -26,7 +26,15 @@ export function FormularioEntrar({
   const [verSenha, setVerSenha] = useState(false);
   const [aceitou, setAceitou] = useState(false);
   const [carregando, setCarregando] = useState(false);
-  const [erro, setErro] = useState<string | null>(erroInicial ? "Não foi possível concluir o login. Tente de novo." : null);
+  const [erro, setErro] = useState<string | null>(
+    erroInicial === "outro-navegador"
+      ? "Seu e-mail foi confirmado! Agora é só entrar com seu e-mail e senha."
+      : erroInicial === "link"
+        ? "O link expirou ou já foi usado. Entre com e-mail e senha; se ainda não confirmou, crie a conta de novo para receber outro link."
+        : erroInicial
+          ? "Não foi possível concluir o login. Tente de novo."
+          : null,
+  );
   const [emailEnviado, setEmailEnviado] = useState(false);
 
   const urlRetorno = () => `${window.location.origin}/auth/callback?voltar=${encodeURIComponent(voltar)}`;

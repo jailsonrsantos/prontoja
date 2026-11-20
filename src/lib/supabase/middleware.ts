@@ -6,7 +6,7 @@ import { SUPABASE_ANON_KEY, SUPABASE_URL, supabaseConfigurado } from "./config";
 const ROTAS_PROTEGIDAS = ["/conta", "/pedido", "/meus-pedidos", "/painel", "/negociacao", "/acordo", "/avaliar", "/cadastro"];
 
 /** Páginas que funcionam mesmo antes de completar o cadastro */
-const ROTAS_LIVRES_CADASTRO = ["/cadastro", "/auth", "/entrar", "/termos", "/privacidade", "/api"];
+const ROTAS_LIVRES_CADASTRO = ["/cadastro", "/auth", "/entrar", "/termos", "/privacidade", "/api", "/diagnostico"];
 
 export async function atualizarSessao(request: NextRequest) {
   let response = NextResponse.next({ request });

@@ -25,6 +25,9 @@ export default function Privacidade() {
       <Secao titulo="4. Com quem compartilhamos">
         <p>Telefone e endereço completo só são exibidos à outra parte depois do acordo pago. Fotos do pedido são vistas apenas pelo cliente e por profissionais da categoria. Usamos fornecedores de infraestrutura (Supabase, Vercel) e, futuramente, de pagamento. [REVISAR COM ADVOGADO]</p>
       </Secao>
+      <Secao titulo="4.1 Localização">
+        <p>Se você permitir, usamos a localização do seu celular para mostrar profissionais e pedidos próximos. Guardamos apenas uma posição aproximada, arredondada para uma área de cerca de 1 km, e nunca o ponto exato. No mapa, outras pessoas veem somente essa área aproximada e a distância arredondada. Sem a permissão, usamos o centro do bairro informado. Você pode apagar sua localização a qualquer momento em Minha conta. Mapas: © OpenStreetMap, OpenFreeMap. [REVISAR COM ADVOGADO]</p>
+      </Secao>
       <Secao titulo="5. Seus direitos">
         <p>Você pode pedir acesso, correção, exclusão ou portabilidade dos seus dados e revogar consentimentos, conforme o art. 18 da LGPD. [REVISAR COM ADVOGADO]</p>
       </Secao>

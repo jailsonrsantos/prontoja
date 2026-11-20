@@ -20,7 +20,7 @@ export default async function PaginaCurriculo({ searchParams }: { searchParams: 
 
   const supabase = await createClient();
   const [{ data: prof }, { data: esp }, { data: fotos }] = await Promise.all([
-    supabase.from("profissionais").select("descricao, cursos, verificado").eq("id", perfil.id).single(),
+    supabase.from("profissionais").select("descricao, cursos, verificado, raio_km").eq("id", perfil.id).single(),
     supabase.from("profissional_categorias").select("categoria_slug").eq("profissional_id", perfil.id),
     supabase.from("portfolio_fotos").select("id, caminho, legenda").eq("profissional_id", perfil.id).order("criado_em"),
   ]);
@@ -52,6 +52,7 @@ export default async function PaginaCurriculo({ searchParams }: { searchParams: 
         descricao={prof?.descricao ?? ""}
         cursos={prof?.cursos ?? []}
         especialidades={(esp ?? []).map((e) => e.categoria_slug as string)}
+        raioKm={prof?.raio_km ?? 10}
       />
       <FotosTrabalhos fotos={(fotos ?? []) as FotoPortfolio[]} />
     </div>

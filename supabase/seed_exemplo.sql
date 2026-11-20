@@ -74,3 +74,46 @@ select v.p::uuid, v.c, v.l from (values
   ('a2222222-2222-4222-8222-222222222222', '/exemplo/trabalho-instalacao.svg', 'Instalação com tubulação embutida')
 ) as v(p, c, l)
 where not exists (select 1 from public.portfolio_fotos f where f.profissional_id = v.p::uuid and f.caminho = v.c);
+
+-- ---------- Etapa 3: raio de atendimento e pedidos de exemplo ----------
+-- (rode este arquivo de novo depois da migração 002)
+do $etapa3$
+begin
+  if to_regclass('public.pedidos') is null then
+    raise notice 'Migração 002 ainda não rodada: pulando pedidos de exemplo.';
+    return;
+  end if;
+
+  update public.profissionais set raio_km = 20 where id = 'a1111111-1111-4111-8111-111111111111';
+  update public.profissionais set raio_km = 10 where id = 'a2222222-2222-4222-8222-222222222222';
+  update public.profissionais set raio_km = 5  where id = 'a3333333-3333-4333-8333-333333333333';
+
+  insert into public.pedidos (id, cliente_id, categoria_slug, ac_tipo_servico, ac_btus, ac_quantidade, descricao, bairro, data_desejada, lance_inicial)
+  values
+    ('e1111111-1111-4111-8111-111111111111', 'c1111111-1111-4111-8111-111111111111', 'ar-condicionado', 'limpeza', 12000, 2,
+     'Dois splits no quarto e na sala, pingando água e com cheiro ruim. Preciso de higienização completa.', 'Fátima', current_date + 3, 180),
+    ('e2222222-2222-4222-8222-222222222222', 'c1111111-1111-4111-8111-111111111111', 'ar-condicionado', 'instalacao', 9000, 1,
+     'Comprei um split novo e preciso instalar no quarto do primeiro andar. Já tenho o suporte.', 'Jóquei', current_date + 5, null),
+    ('e3333333-3333-4333-8333-333333333333', 'c1111111-1111-4111-8111-111111111111', 'ar-condicionado', 'conserto', 18000, 1,
+     'Ar liga mas não gela. O técnico anterior disse que pode ser falta de gás ou capacitor.', 'Mocambinho', current_date + 2, 150),
+    ('e4444444-4444-4444-8444-444444444444', 'c1111111-1111-4111-8111-111111111111', 'eletricista', null, null, null,
+     'Tomada da cozinha esquentando e disjuntor caindo quando ligo o micro-ondas.', 'Fátima', current_date + 1, 120)
+  on conflict (id) do nothing;
+
+  insert into public.pedido_endereco (pedido_id, endereco, referencia) values
+    ('e1111111-1111-4111-8111-111111111111', 'Rua Exemplo de Teste, 100', 'Casa de muro azul'),
+    ('e2222222-2222-4222-8222-222222222222', 'Av. Exemplo de Teste, 200, apto 101', null),
+    ('e3333333-3333-4333-8333-333333333333', 'Rua Fictícia, 300', 'Perto da praça'),
+    ('e4444444-4444-4444-8444-444444444444', 'Rua Exemplo de Teste, 100', 'Casa de muro azul')
+  on conflict (pedido_id) do nothing;
+
+  insert into public.pedido_fotos (pedido_id, caminho, ordem)
+  select v.p::uuid, v.c, v.o from (values
+    ('e1111111-1111-4111-8111-111111111111', '/exemplo/pedido-split-sujo.svg', 0),
+    ('e1111111-1111-4111-8111-111111111111', '/exemplo/pedido-pingando.svg', 1),
+    ('e2222222-2222-4222-8222-222222222222', '/exemplo/pedido-caixa.svg', 0),
+    ('e3333333-3333-4333-8333-333333333333', '/exemplo/pedido-split-sujo.svg', 0),
+    ('e4444444-4444-4444-8444-444444444444', '/exemplo/pedido-tomada.svg', 0)
+  ) as v(p, c, o)
+  where not exists (select 1 from public.pedido_fotos f where f.pedido_id = v.p::uuid and f.caminho = v.c);
+end $etapa3$;

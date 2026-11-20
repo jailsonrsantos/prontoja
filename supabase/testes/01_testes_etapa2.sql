@@ -28,7 +28,7 @@ select pg_temp.ok(not tem_contato('Instalação com garantia de 90 dias'), 'não
 -- 2) Cliente comum
 begin;
 select pg_temp.como('c1111111-1111-4111-8111-111111111111');
-select pg_temp.ok((select count(*) from perfis) = 4, 'logado vê perfis');
+select pg_temp.ok((select count(*) from perfis) >= 4, 'logado vê perfis');
 update perfis set is_admin = true, nome = 'Ana C.' where id = auth.uid();
 select pg_temp.ok((select not is_admin and nome = 'Ana C.' from perfis where id = auth.uid()), 'não vira admin sozinho, mas edita nome');
 select pg_temp.erro($q$update perfis set tipo = 'profissional' where id = auth.uid()$q$, 'TIPO_NAO_PODE_MUDAR', 'não troca de tipo');
@@ -59,14 +59,14 @@ rollback;
 -- 4) Visitante sem login
 begin;
 select pg_temp.como(null);
-select pg_temp.ok((select count(*) from perfis) = 3, 'visitante vê só perfis de profissionais');
+select pg_temp.ok((select bool_and(tipo = 'profissional') and count(*) >= 3 from perfis), 'visitante vê só perfis de profissionais');
 select pg_temp.ok((select count(*) from contatos_privados) = 0, 'visitante não vê contatos');
 rollback;
 
 -- 5) Novo usuário pelo Google (sem aceite ainda)
+begin;
 insert into auth.users (id, email, raw_user_meta_data) values ('b0000000-0000-4000-8000-000000000001', 'g@teste', '{"full_name":"Gil Google"}');
 select pg_temp.ok((select nome = 'Gil Google' and tipo is null and aceitou_termos_em is null from perfis where id = 'b0000000-0000-4000-8000-000000000001'), 'perfil criado ao cadastrar (Google)');
-begin;
 select pg_temp.como('b0000000-0000-4000-8000-000000000001');
 update perfis set tipo = 'profissional', aceitou_termos_em = '2000-01-01', versao_termos = '2026-11-v1' where id = auth.uid();
 select pg_temp.ok((select aceitou_termos_em > now() - interval '1 minute' from perfis where id = auth.uid()), 'hora do aceite vem do servidor');

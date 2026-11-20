@@ -37,7 +37,10 @@ begin new.atualizado_em := now(); return new; end $fn$;
 -- (No SQL Editor do Supabase você é 'postgres', então pode tudo.)
 create or replace function public.eh_usuario_do_app()
 returns boolean language sql stable as $fn$
-  select current_user in ('authenticated', 'anon')
+  -- 'role' continua 'authenticated' mesmo dentro de funções com permissão especial.
+  -- Funções internas do sistema ligam a marca 'prontoja.sistema' para fazer mudanças permitidas.
+  select coalesce(current_setting('role', true), current_user) in ('authenticated', 'anon')
+     and coalesce(current_setting('prontoja.sistema', true), '') <> '1'
 $fn$;
 
 -- ---------- Categorias ----------

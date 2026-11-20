@@ -11,10 +11,12 @@ export function FormCurriculo({
   descricao,
   cursos,
   especialidades,
+  raioKm,
 }: {
   descricao: string;
   cursos: string[];
   especialidades: string[];
+  raioKm: number;
 }) {
   const [estado, enviar, enviando] = useActionState(salvarCurriculo, undefined);
   const [texto, setTexto] = useState(descricao);
@@ -35,6 +37,19 @@ export function FormCurriculo({
           ))}
         </div>
         <p className="text-xs text-suave">Você receberá pedidos das categorias marcadas.</p>
+      </section>
+
+      <section className="cartao space-y-3">
+        <h2 className="font-bold">Até onde você atende?</h2>
+        <div className="grid grid-cols-3 gap-2">
+          {[3, 5, 10, 20, 50].map((r) => (
+            <label key={r} className="flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-slate-300 px-2 text-center text-sm font-semibold has-[:checked]:border-marca has-[:checked]:bg-marca text-texto has-[:checked]:text-white">
+              <input type="radio" name="raio_km" value={r} defaultChecked={raioKm === r} className="sr-only" />
+              {r >= 50 ? "Toda Teresina" : `${r} km`}
+            </label>
+          ))}
+        </div>
+        <p className="text-xs text-suave">Você aparece no mapa só para clientes dentro desse raio. Defina sua localização em Conta.</p>
       </section>
 
       <section className="cartao space-y-2">

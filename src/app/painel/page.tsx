@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CheckCircle2, Circle, Inbox } from "lucide-react";
+import { CheckCircle2, Circle } from "lucide-react";
 import { perfilAtual, primeiroNome } from "@/lib/perfil";
 import { createClient } from "@/lib/supabase/server";
+import { meuLocal } from "@/lib/meuLocal";
+import { linksFotosPedido } from "@/lib/fotosPedido";
+import { PedidosProximos, type PedidoProximo } from "./PedidosProximos";
 
 export const metadata: Metadata = { title: "Painel do profissional" };
 
@@ -13,12 +16,24 @@ export default async function PainelProfissional() {
   if (perfil.tipo !== "profissional") redirect("/meus-pedidos");
 
   const supabase = await createClient();
-  const [{ data: prof }, { count: nEsp }, { count: nFotos }, { data: contato }] = await Promise.all([
-    supabase.from("profissionais").select("descricao").eq("id", perfil.id).single(),
+  const [{ data: prof }, { count: nEsp }, { count: nFotos }, { data: contato }, local, { data: proximos }] = await Promise.all([
+    supabase.from("profissionais").select("descricao, raio_km").eq("id", perfil.id).single(),
     supabase.from("profissional_categorias").select("*", { count: "exact", head: true }).eq("profissional_id", perfil.id),
     supabase.from("portfolio_fotos").select("*", { count: "exact", head: true }).eq("profissional_id", perfil.id),
     supabase.from("contatos_privados").select("whatsapp").eq("id", perfil.id).maybeSingle(),
+    meuLocal(),
+    supabase.rpc("buscar_pedidos_proximos"),
   ]);
+
+  // Primeira foto de cada pedido (link temporário)
+  const pedidos = (proximos ?? []) as PedidoProximo[];
+  const { data: capas } = pedidos.length
+    ? await supabase.from("pedido_fotos").select("pedido_id, caminho, ordem").in("pedido_id", pedidos.map((p) => p.id)).order("ordem")
+    : { data: [] };
+  const capaDe = new Map<string, string>();
+  (capas ?? []).forEach((c) => !capaDe.has(c.pedido_id) && capaDe.set(c.pedido_id, c.caminho));
+  const links = await linksFotosPedido(supabase, [...capaDe.values()]);
+  const pedidosComCapa = pedidos.map((p) => ({ ...p, capa: capaDe.has(p.id) ? links[capaDe.get(p.id)!] : null }));
 
   const passos = [
     { feito: Boolean(perfil.foto_url), texto: "Foto de perfil", href: "/painel/curriculo" },
@@ -55,11 +70,7 @@ export default async function PainelProfissional() {
         </section>
       )}
 
-      <section className="cartao space-y-2 text-center">
-        <Inbox className="mx-auto h-10 w-10 text-suave" aria-hidden />
-        <h2 className="font-bold">Pedidos da sua categoria</h2>
-        <p className="text-sm text-suave">Os pedidos abertos dos clientes vão aparecer aqui (Etapa 3).</p>
-      </section>
+      <PedidosProximos pedidos={pedidosComCapa} local={local} raioKm={prof?.raio_km ?? 10} />
     </div>
   );
 }

@@ -23,6 +23,8 @@ export async function salvarCurriculo(_: unknown, form: FormData): Promise<Resul
   const ativas = new Set(CATEGORIAS.filter((c) => c.ativa).map((c) => c.slug));
   const especialidades = form.getAll("especialidades").map(String).filter((s) => ativas.has(s));
 
+  const raio = Number(form.get("raio_km"));
+  if (![3, 5, 10, 20, 50].includes(raio)) return { ok: false, erro: "Escolha o raio de atendimento." };
   if (descricao.length < 20) return { ok: false, erro: "Escreva uma descrição com pelo menos 20 caracteres." };
   if (especialidades.length === 0) return { ok: false, erro: "Marque pelo menos uma especialidade." };
   const bloqueado = [descricao, ...cursos].map(motivoContato).find(Boolean);
@@ -31,7 +33,7 @@ export async function salvarCurriculo(_: unknown, form: FormData): Promise<Resul
   const { supabase, uid } = await profissionalLogado();
   if (!uid) return { ok: false, erro: "Apenas profissionais podem editar o currículo." };
 
-  const { error } = await supabase.from("profissionais").update({ descricao, cursos }).eq("id", uid);
+  const { error } = await supabase.from("profissionais").update({ descricao, cursos, raio_km: raio }).eq("id", uid);
   if (error) return { ok: false, erro: traduzirErro(error.message) };
 
   const { data: atuais } = await supabase.from("profissional_categorias").select("categoria_slug").eq("profissional_id", uid);

@@ -6,6 +6,8 @@ import { perfilAtual } from "@/lib/perfil";
 import { createClient } from "@/lib/supabase/server";
 import { FotoPerfil } from "./FotoPerfil";
 import { FormConta } from "./FormConta";
+import { CartaoLocalizacao } from "./CartaoLocalizacao";
+import { meuLocal } from "@/lib/meuLocal";
 
 export const metadata: Metadata = { title: "Minha conta" };
 
@@ -14,7 +16,10 @@ export default async function PaginaConta() {
   if (!usuario || !perfil) redirect("/entrar?voltar=/conta");
 
   const supabase = await createClient();
-  const { data: contato } = await supabase.from("contatos_privados").select("telefone, whatsapp").eq("id", usuario.id).maybeSingle();
+  const [{ data: contato }, local] = await Promise.all([
+    supabase.from("contatos_privados").select("telefone, whatsapp").eq("id", usuario.id).maybeSingle(),
+    meuLocal(),
+  ]);
   const provedor = usuario.app_metadata?.provider === "google" ? "Google" : "E-mail e senha";
 
   return (
@@ -47,6 +52,8 @@ export default async function PaginaConta() {
       )}
 
       <FormConta nome={perfil.nome} bairro={perfil.bairro ?? ""} telefone={contato?.telefone ?? null} whatsapp={contato?.whatsapp ?? null} />
+
+      <CartaoLocalizacao fonte={local.fonte} />
 
       <form action="/auth/sair" method="post">
         <button className="btn-contorno w-full">

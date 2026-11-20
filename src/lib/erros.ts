@@ -12,6 +12,13 @@ export function traduzirErro(mensagem?: string | null): string {
   if (m.includes("contato_bloqueado")) return "Por segurança, não é permitido colocar telefone, e-mail ou redes sociais. Eles são liberados depois do acordo pago.";
   if (m.includes("tipo_nao_pode_mudar")) return "O tipo de conta não pode ser alterado. Fale com o suporte.";
   if (m.includes("limite_fotos")) return "Você atingiu o limite de 12 fotos de trabalhos.";
+  if (m.includes("categoria_indisponivel")) return "Esta categoria ainda não está disponível.";
+  if (m.includes("apenas_clientes")) return "Apenas contas de cliente podem fazer pedidos.";
+  if (m.includes("dados_ar_condicionado")) return "Informe o tipo de serviço e a quantidade de aparelhos.";
+  if (m.includes("data_invalida")) return "Escolha uma data entre hoje e os próximos 90 dias.";
+  if (m.includes("pedido_nao_editavel")) return "Este pedido não pode mais ser alterado.";
+  if (m.includes("limite_fotos_pedido")) return "Cada pedido pode ter no máximo 6 fotos.";
+  if (m.includes("foto_invalida")) return "Foto inválida. Envie de novo.";
   if (m.includes("row-level security")) return "Você não tem permissão para esta ação.";
   if (m.includes("payload too large") || m.includes("exceeded the maximum")) return "A foto é grande demais. Tente outra.";
   if (m.includes("failed to fetch")) return "Sem conexão com o servidor. Verifique sua internet.";

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Map as IconeMapa, Search } from "lucide-react";
 import { filtrarCategorias } from "@/lib/categorias";
 import { IconeCategoria } from "./IconeCategoria";
 
@@ -24,6 +24,14 @@ export function BuscaCategorias() {
           enterKeyHint="search"
         />
       </label>
+
+      <Link
+        href={`/mapa${lista.length === 1 && lista[0].ativa ? `?categoria=${lista[0].slug}` : ""}`}
+        className="btn-contorno w-full"
+      >
+        <IconeMapa className="h-5 w-5 text-marca" aria-hidden />
+        {lista.length === 1 && lista[0].ativa ? `Ver no mapa: ${lista[0].nome}` : "Ver profissionais no mapa"}
+      </Link>
 
       <h2 id="titulo-categorias" className="text-lg font-bold">
         Categorias

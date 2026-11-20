@@ -2,16 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ClipboardList, Home, UserRound } from "lucide-react";
+import { ClipboardList, Home, LayoutDashboard, UserRound } from "lucide-react";
 
-const ITENS = [
+const ITENS_CLIENTE = [
   { href: "/", rotulo: "Início", Icone: Home },
   { href: "/meus-pedidos", rotulo: "Meus pedidos", Icone: ClipboardList },
   { href: "/conta", rotulo: "Conta", Icone: UserRound },
 ];
+const ITENS_PROFISSIONAL = [
+  { href: "/", rotulo: "Início", Icone: Home },
+  { href: "/painel", rotulo: "Painel", Icone: LayoutDashboard },
+  { href: "/conta", rotulo: "Conta", Icone: UserRound },
+];
 
-export function MenuInferior() {
+export function MenuInferior({ tipo }: { tipo?: "cliente" | "profissional" | null }) {
   const caminho = usePathname();
+  const ITENS = tipo === "profissional" ? ITENS_PROFISSIONAL : ITENS_CLIENTE;
   return (
     <nav
       aria-label="Menu principal"

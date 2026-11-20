@@ -4,6 +4,7 @@ import "./globals.css";
 import { Cabecalho } from "@/components/Cabecalho";
 import { MenuInferior } from "@/components/MenuInferior";
 import { RegistrarServiceWorker } from "@/components/RegistrarServiceWorker";
+import { perfilAtual } from "@/lib/perfil";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const spaceGrotesk = Space_Grotesk({
@@ -31,13 +32,14 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { perfil } = await perfilAtual();
   return (
     <html lang="pt-BR" className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <body className="min-h-dvh antialiased">
         <Cabecalho />
         <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-4">{children}</main>
-        <MenuInferior />
+        <MenuInferior tipo={perfil?.tipo} />
         <RegistrarServiceWorker />
       </body>
     </html>
